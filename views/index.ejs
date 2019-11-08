@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.3.1/cerulean/bootstrap.min.css"
+        type="text/css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <title>Survey Form</title>
+    <style>
+        .wrapper {
+            width: 600px;
+            margin: 10px auto;
+        }
+
+        .errorMessage {
+            color: red;
+        }
+
+        .myheader {
+            width: 100%;
+            height: 10%;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .right {
+            margin-left: 70%;
+        }
+
+        .short {
+            width: 100px;
+        }
+        .indented{
+            margin-left: 100px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="myheader table-primary">
+        <legend>The Dojo Message Board</legend>
+    </div>
+    <div class="wrapper">
+        <!-- tip to easily see objects printed in full instead of [object Object] -->
+        <% JSON.stringify(messages) %>
+        <!-- based on the structure of your messages, determine how to display them -->
+        <% if(messages.Errors) { %>
+        <% for (var x of messages.Errors) { %>
+        <small class="errorMessage"><%= x %></small><br>
+        <% } %>
+        <% } %>
+        <form action="/newdojomessage" method="post">
+            <fieldset>
+                <div class="form-group">
+                    <label for="username">Name:</label>
+                    <input type="text" class="form-control short" id="username" name="username"
+                        aria-describedby="usernameHelp" placeholder="Enter name">
+                </div>
+                <div class="form-group">
+                    <label for="messageContent">Message:</label>
+                    <textarea class="form-control" name="messageContent" id="messageContent" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary right">Post Message</button>
+            </fieldset>
+        </form>
+    </div>
+    <div class="wrapper">
+        <% for (var message of messagesArray) { %>
+
+        <Legend><b>Name:</b> <%= message.username %> </Legend>
+        <Legend><b>Message:</b> <%= message.messageContent %> </Legend>
+        <div class="indented">
+            <form action="/newdojocomment/<%= message.username %>" method="post">
+                <fieldset>
+                    <div class="form-group">
+                        <label for="username">Name:</label>
+                        <input type="text" class="form-control short" id="username" name="username"
+                            aria-describedby="usernameHelp" placeholder="Enter name">
+                    </div>
+                    <div class="form-group">
+                        <label for="commentContent">Comment:</label>
+                        <textarea class="form-control " name="commentContent" id="commentContent" rows="1"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary right">Add Comment</button>
+                </fieldset>
+            </form>
+
+        </div>
+        <% } %>
+    </div>
+</body>
+
+</html>
