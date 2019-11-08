@@ -36,6 +36,9 @@
         .indented{
             margin-left: 100px;
         }
+        .hidden{
+            visibility: none;
+        }
     </style>
 </head>
 
@@ -73,8 +76,18 @@
 
         <Legend><b>Name:</b> <%= message.username %> </Legend>
         <Legend><b>Message:</b> <%= message.messageContent %> </Legend>
+        
+        <% JSON.stringify(messages.comments) %>
+
+        <% for (var cmd of message.comments) { %>
         <div class="indented">
-            <form action="/newdojocomment/<%= message.username %>" method="post">
+            <p><b>From:  </b><%= cmd.username %></p>
+            <p><b>Comment:   </b><%= cmd.commentContent %></p>
+        </div>
+        <% } %>
+
+        <div class="indented">
+            <form action="/newdojocomment/<%= message._id %>" method="post">
                 <fieldset>
                     <div class="form-group">
                         <label for="username">Name:</label>

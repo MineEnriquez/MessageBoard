@@ -3,7 +3,6 @@ const app = express();
 const session = require('express-session');
 const mongoose = require('mongoose');
 const flash = require('express-flash');
-const Schema = mongoose.Schema;
 
 app.listen(8000, () => console.log("listening on port 8000"));
 app.use(express.static(__dirname + "/static"));
@@ -14,21 +13,16 @@ app.use(flash());
 
 mongoose.connect('mongodb://localhost/MessageBoard', { useNewUrlParser: true });
 
-const MessageSchema = new Schema({
-    _id: Schema.Types.ObjectId,
+const CommentSchema = new mongoose.Schema({
     username: { type: String, required: [true, "Name is required"] },
-    messageContent: { type: String, required: [true, "Message must have a title"], minlength: [10, "Message must have at least 10 characters"] },
-    // comments: [CommentSchema]
-    comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }]
+    commentContent: { type: String, required: [true, "Comment must have a title"], minlength: [1, "Comment must have at least 1 characters"] },
 }, { timestamps: true })
 
-
-const CommentSchema = new Schema({
-    message: { type: Schema.Types.ObjectId, ref: 'Message' },
+const MessageSchema = new mongoose.Schema({
     username: { type: String, required: [true, "Name is required"] },
-    commentContent: { type: String, required: [true, "Comment must have a title"], minlength: [10, "Comment must have at least 10 characters"] },
+    messageContent: { type: String, required: [true, "Message must have a title"], minlength: [1, "Message must have at least 1 characters"] },
+    comments: [CommentSchema]
 }, { timestamps: true })
-
 
 
 // create an object that contains methods for mongoose to interface with MongoDB
@@ -69,14 +63,17 @@ app.post('/newdojomessage', (req, res) => {
 });
 
 
-app.post('/newdojocomment/:name', (req, res) => {
-
+app.post('/newdojocomment/:id', (req, res) => {
+    var commentario = new Comment();
+    commentario.username = req.body.username;
+    commentario.commentContent = req.body.commentContent;
+    console.log(commentario);
     Comment.create(req.body, function(err, data){
         if(err){
             console.log("-----------------ERROR CREATING THE COMMENT--------------");
         }
         else {
-            Message.findOneAndUpdate({name: req.params.name}, {$push: {comments: {username: req.body.username, commentContent: req.body.commentContent}}}, function (err, data) {
+            Message.findOneAndUpdate({_id: req.params.id}, {$push: {comments: commentario}}, function (err, data) {
                 if (err) {
                     console.log("problems trying to push the data");
                 }
